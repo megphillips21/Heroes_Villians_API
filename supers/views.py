@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import SupersSerializer
 from rest_framework import status
-from .models import Supers
+from .models import Super
 from supers import serializers
 
 
@@ -11,8 +11,8 @@ from supers import serializers
 def supers_list(request):
 
     if request.method == 'GET':
-        supers = Supers.objects.all()
-        serializer = SupersSerializer(supers, many=True)
+        super = Super.objects.all()
+        serializer = SupersSerializer(super, many=True)
         return Response(serializer.data)
     
     elif request.method == 'POST':
@@ -21,9 +21,9 @@ def supers_list(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def super_detail(request, pk):
-    super = get_object_or_404(Supers, pk=pk)
+    super = get_object_or_404(Super, pk=pk)
     if request.method == 'GET':
         serializer = SupersSerializer(super)
         return Response(serializer.data)
@@ -32,5 +32,7 @@ def super_detail(request, pk):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
-
+    elif request.method == 'DELETE':
+        super.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
