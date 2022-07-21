@@ -11,15 +11,23 @@ from supers import serializers
 def supers_list(request):
 
     if request.method == 'GET':
-        super = Super.objects.all()
-        serializer = SupersSerializer(super, many=True)
+
+        super_type = request.query_params.get('super_type')
+        print(super_type)
+        supers = Super.objects.all()
+        
+        if super_type:
+            supers = supers.filter(super_type_supertype__type=super_type)
+        
+        serializer = SupersSerializer(supers, many=True)
         return Response(serializer.data)
     
     elif request.method == 'POST':
         serializer = SupersSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True) 
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
     
 @api_view(['GET', 'PUT', 'DELETE'])
 def super_detail(request, pk):
