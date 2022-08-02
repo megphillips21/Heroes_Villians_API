@@ -17,7 +17,7 @@ def supers_list(request):
         supers = Super.objects.all()
         
         if super_type:
-            supers = supers.filter(super_type_supertype__type=super_type)
+            supers = supers.filter(super_type__type=super_type)
         
         serializer = SupersSerializer(supers, many=True)
         return Response(serializer.data)
